@@ -109,50 +109,58 @@ student-api/
   - 404 Not Found with detail `"ID not Found"`
   - 422 Unprocessable Entity for invalid query values
 
-## Examples
+## Using Swagger UI (/docs)
 
-- Create a student
+Follow these steps to explore and test the API using the built-in Swagger UI:
 
-  ```bash
-  curl -X POST http://127.0.0.1:8000/students \
-       -H "Content-Type: application/json" \
-       -d '{"name":"GUna","age":18,"grade":9}'
-  ```
+1. Start the server and open http://127.0.0.1:8000/docs in your browser.
+2. Expand an endpoint, click "Try it out", fill required fields, then click "Execute".
 
-- List all students
+### Walkthrough
 
-  ```bash
-  curl http://127.0.0.1:8000/students
-  ```
+- GET `/` — Health check
 
-- Filter by age and grade
+  - Expand "GET /" → Try it out → Execute
+  - You should see `{ "working": "Good" }` in the Response body.
 
-  ```bash
-  curl "http://127.0.0.1:8000/students?min_age=17&grade=9"
-  ```
+- POST `/students` — Create a new student
 
-- Search by name substring
+  - Expand "POST /students" → Try it out
+  - In the Request body, enter:
+    ```json
+    { "name": "GUna", "age": 18, "grade": 9 }
+    ```
+  - Execute → Expect 201 Created with a response containing `id` and title-cased `name` (e.g., "Guna").
 
-  ```bash
-  curl "http://127.0.0.1:8000/students?search=a"
-  ```
+- GET `/students` — List/search students
 
-- Get by ID
+  - Expand "GET /students" → Try it out
+  - Leave all query params empty to list all
+  - Optionally set filters:
+    - `min_age` (>= 13)
+    - `grade` (>= 5)
+    - `search` (substring match in name)
+  - Execute → 200 with a list of students, or 404 if no results match.
 
-  ```bash
-  curl http://127.0.0.1:8000/student/1
-  ```
+- GET `/student/{id}` — Get student by ID
 
-- Update by ID (query params)
+  - Expand → Try it out → Enter `id` (>= 1) → Execute
+  - Expect 200 with the student or 404 with detail `"Data not Found {id}"`.
 
-  ```bash
-  curl -X PUT "http://127.0.0.1:8000/student/1?name=maDHan&age=21&grade=8"
-  ```
+- PUT `/student/{id}` — Update student by ID
 
-- Delete by ID
-  ```bash
-  curl -X DELETE http://127.0.0.1:8000/student/1
-  ```
+  - Expand → Try it out
+  - Enter `id` and any of the optional query params: `name`, `age` (13–24), `grade` (5–10)
+  - Execute → 200 with the updated student, or 404 if ID not found.
+
+- DELETE `/student/{id}` — Delete student by ID
+  - Expand → Try it out → Enter `id` → Execute
+  - Expect 200 with `{ "{id}": "deleted" }`, or 404 if ID not found.
+
+### Validation
+
+- Invalid inputs return 422 with details (e.g., too-short name, out-of-range age/grade).
+- Names are normalized to Title Case on create and update.
 
 ## Running Tests
 
@@ -170,7 +178,3 @@ pytest -q
 ## License
 
 This project is for learning purposes. Choose and add a license if you plan to distribute.
-
----
-
-Tip: A repo info file for this workspace is missing (`.zencoder/rules/repo.md`). If you want, I can generate it to improve future assistance quality.
