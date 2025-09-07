@@ -165,7 +165,7 @@ Follow these steps to explore and test the API using the built-in Swagger UI:
 ## Running Tests
 
 ```bash
-pytest -q
+PYTHONPATH=. pytest -q
 ```
 
 ## Notes & Limitations
